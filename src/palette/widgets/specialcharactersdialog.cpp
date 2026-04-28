@@ -724,14 +724,21 @@ void SpecialCharactersDialog::populateUnicode()
     if (!current) {
         return;
     }
-    int row = current->data(Qt::UserRole).toInt();
-    const UnicodeRange& range = unicodeRanges[row];
-    m_pUnicode->clear();
 
     auto paletteScore = paletteScoreProvider()->paletteScore();
     if (!paletteScore) {
+        m_pUnicode->clear();
         return;
     }
+
+    int row = current->data(Qt::UserRole).toInt();
+    if (row < 0 || row >= static_cast<int>(unicodeRanges.size())) {
+        return;
+    }
+
+    const UnicodeRange& range = unicodeRanges[row];
+    m_pUnicode->clear();
+
     for (char32_t code = range.first; code <= range.last; ++code) {
         std::shared_ptr<FSymbol> fs = std::make_shared<FSymbol>(paletteScore->dummy());
         fs->setCode(code);
